@@ -1,0 +1,32 @@
+---
+// --Forma estática
+// import type { GetStaticPaths } from "astro";
+import { getLaunchById, getLatestLaunches } from "../../services/spacex";
+import Layout from "../../layouts/Layout.astro";
+
+// --Forma dinámica para modo híbrido
+export const prerender = false;
+
+const { id } = Astro.params;
+let launch = null;
+if (id) {
+  launch = await getLaunchById({ id });
+}
+
+// --Forma estática
+// export const getStaticPaths = (async () => {
+//   const launches = await getLatestLaunches();
+
+//   return launches.map((launch) => ({
+//     params: { id: launch.id },
+//   }));
+// }) satisfies GetStaticPaths;
+---
+
+<Layout title={`Lanzamiento ${launch?.id}`}>
+  <article class="flex flex-col items-center gap-y-8">
+    <img class="w-52 h-auto" src={launch?.links?.patch?.small} alt={`Launch ${launch?.id}`} />
+    <h2 class="text-4xl font-bold text-white">Vuelo #{launch?.flight_number}</h2>
+    <p class="text-lg text-balance text-center">{launch?.details ? launch.details : "No hay detalles"}</p>
+  </article>
+</Layout>
